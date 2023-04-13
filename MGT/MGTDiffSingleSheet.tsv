@@ -1,0 +1,52 @@
+CDC English	CDC Spanish	NIH English	NIH Spanish
+Count of CDC English matches NIH English but not Spanish: 	0
+Count of CDC English has no NIH English Match: 	8
+Count of NIH English has no CDC English Match: 	39
+Count CDC and NIH Terms that match Both English and Spanish: 	0
+2	1,2,3,4,6,7,8,9-octachlorodibenzofuran	1,2,3,4,6,7,8,9-octaclorodibenzofurano	asthma	asma
+2	1-800-QUIT-NOW	1-855-DÉJELO-YO	asthma	asma
+2	6 months and older	6 meses o mayores	asthma	asma
+2	6 months and older	6 meses o más	asthma	asma
+2	6 months and older	de 6 meses en adelante	asthma	asma
+2	acquired immune deficiency syndrome	síndrome de inmunodeficiencia adquirida	asthma	asma
+2	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	asthma	asma
+2	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	asthma	asma
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	English	Spanish
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	abortion	aborto
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	abrasion	abrasión
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	abscess	abceso
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	allergist	alergólogo
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	allergist	alergóloga
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	allergy	alergia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	ambulance	ambulancia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	amnesia	amnesia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	analgesic	analgésico
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anaphylactic shock	shock anafiláctico
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anemia	anemia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anesthesia	anestesia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anesthesiologist	anestesiólogo
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anesthesiologist	anestesióloga
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anesthesiologist	anestesista
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	aneurysm	aneurism
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	aneurysm	aneurisma
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	angina	angina de pecho
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antacid	antiácido
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anti-depressant	antidepresivo
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	Anti-inflammatory	antiinflamatorio
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antibiotic	antibiótico
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antibodies	anticuerpos
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anticoagulant	anticoagulante
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antidote	antídoto
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antihistamine	antihistamínico
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	antipyretic	antipirético
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anus	ano
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	anxiety	ansiedad
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	aorta	aorta
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	appendectomy	apendectomía
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	appendicitis	apendicitis
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	arm	brazo
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	arm pit	axila
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	arrhythmia	arritmia
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	artery	arteria
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	arthritis	artritis
+3	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida	asthma	asma

@@ -1,13 +1,18 @@
 import csv
+
+# Define source of input files
+input1_source = "CDC"
+input2_source = "SSA"
+
+# Define output file directory (relative to main script)
+output_dir = 'MGT/Outputs/'
+
 # open .tsv file(s)
 
-# DEBUG
-# probably need to rename all the agency specific elements to something generic
-
 #nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
-input2_initial = open('C:\GitHub\markXLIX.github.io\MGT\SSA English-Spanish.tsv',
-                      encoding='utf-8').read().split('\n')
 input1_initial = open('C:\GitHub\markXLIX.github.io\MGT\CDC_testing.tsv',
+                      encoding='utf-8').read().split('\n')
+input2_initial = open('C:\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv',
                       encoding='utf-8').read().split('\n')
 # Pandas caused type errors due to identifying some content as integer rather than string.
 # Obviously can fix this but decided to just get it working as a normal list
@@ -46,14 +51,14 @@ for input1_item in input1_list:
     match_found = False
     # loop through each row in list2
     for input2_item in input2_list:
-        # assign value to last_english_term_nih if current nih value is non-empty.
-        # otherwise do not change value of last_english_term_nih
+        # assign value to last_english_term_input2_item if current input2_item value is non-empty.
+        # otherwise do not change value of last_english_term_input2_item
         if input2_item[0] != '':
             last_english_term_input2_item = input2_item[0]
         else:
             input2_item[0] = last_english_term_input2_item
         match_found = False
-        # check if the first item in the row matches
+        # check if the first item in the row matches (this means there is a matching English term in each list)
         if input1_item[0] == input2_item[0]:
             # check if the second item in the row matches
             if input1_item[1] == input2_item[1]:
@@ -63,19 +68,17 @@ for input1_item in input1_list:
                 terms_match.append(a)
                 # break out of the loop through list2
                 match_found = True
-                del input2_list[input2_counter]
                 break
             else:
                 a = [input1_item[0], input1_item[1],
                      input2_item[0], input2_item[1]]
                 english_term_exists.append(a)
                 match_found = True
-                del input2_list[input2_counter]
                 break
         input2_counter += 1
     # if no match was found, add the row to the no_match_list variable
     if not match_found:
-        a = [input1_item[0], input1_item[1], input2_item[0], input2_item[1]]
+        a = [input1_item[0], input1_item[1], None, None]
         no_match_list_input1_item.append(a)
     input1_counter += 1
 
@@ -87,7 +90,7 @@ for input2_item in input2_list:
             match_found = True
             break
     if not match_found:
-        a = ["", "", input2_item[0], input2_item[1]]
+        a = [None, None, input2_item[0], input2_item[1]]
         no_match_list_input2_item.append(a)
 
 # count of each output variable
@@ -97,12 +100,12 @@ count_no_match_list_input2 = len(no_match_list_input2_item)
 count_terms_match = len(terms_match)
 
 # print the results to screen
-print("\nCDC English Terms Exists, Spanish Does Not Match:")
+print("\n", "English Terms Exists In Both, Spanish Does Not Match:")
 for row in english_term_exists:
     print(row)
 print("Match count:", len(english_term_exists))
 
-print("\nCDC English Term does not exist in NIH:")
+print("\n", input1_source, "English Term does not exist in", input2_source, ": ")
 for row in no_match_list_input1_item:
     print(row)
 print("No match count:", count_no_match_list_input1)
@@ -121,11 +124,16 @@ print("Match count:", count_terms_match)
 headers = ['CDC English', 'CDC Spanish', 'NIH English', 'NIH Spanish']
 
 # names of files to write to
-English_Not_Spanish = 'EnglishNotSpanish.tsv'
-CDC_English_Not_NIH_Spanish = 'CDCEnglishNotNIHSpanish.tsv'
-CNIH_English_Not_CDC_Spanish = 'CNIHEnglishNotCDCSpanish.tsv'
-Terms_Match = 'TermsMatch.tsv'
-MGT_Diff_Single_Sheet = 'MGTDiffSingleSheet.tsv'
+English_Not_Spanish = output_dir + input1_source + '_' + \
+    input2_source + '__' + 'EnglishMatchesNotSpanish.tsv'
+CDC_English_Not_NIH_Spanish = output_dir + input1_source + '_' + input2_source + \
+    '__' + input2_source + 'EnglishNot' + input1_source + 'Spanish.tsv'
+CNIH_English_Not_CDC_Spanish = output_dir + input1_source + '_' + input2_source + \
+    '__' + input1_source + 'EnglishNot' + input2_source + 'Spanish.tsv'
+Terms_Match = output_dir + input1_source + \
+    '_' + input2_source + '__' + 'TermsMatch.tsv'
+MGT_Diff_Single_Sheet = output_dir + input1_source + '_' + \
+    input2_source + '__' + 'MGTDiffSingleSheet.tsv'
 
 # write the TSV files
 with open(MGT_Diff_Single_Sheet, 'wt', encoding='utf-8', newline='') as file_out:

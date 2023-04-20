@@ -1,9 +1,8 @@
 CDC English	CDC Spanish	NIH English	NIH Spanish
-Count of CDC English matches NIH English but not Spanish: 	1
-Count of CDC English has no NIH English Match: 	8
-Count of NIH English has no CDC English Match: 	53
-Count CDC and NIH Terms that match Both English and Spanish: 	0
-1	Adam's apple	nuez de Adam	Adam's apple	nuez de la garganta
+Count of CDC English matches NIH English but not Spanish: 	0
+Count of CDC English has no NIH English Match: 	9
+Count of NIH English has no CDC English Match: 	54
+Count CDC and NIH Terms that match Both English and Spanish: 	1
 2	1,2,3,4,6,7,8,9-octachlorodibenzofuran	1,2,3,4,6,7,8,9-octaclorodibenzofurano		
 2	1-800-QUIT-NOW	1-855-DÉJELO-YO		
 2	6 months and older	6 meses o mayores		
@@ -12,9 +11,11 @@ Count CDC and NIH Terms that match Both English and Spanish: 	0
 2	acquired immune deficiency syndrome	síndrome de inmunodeficiencia adquirida		
 2	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida		
 2	acquired immunodeficiency syndrome	síndrome de inmunodeficiencia adquirida		
+2	Adam's apple	nuez de Ada		
 3			abdomen	abdomen
 3			abdomen	vientre
 3			acquired immune deficiency syndrome 	síndrome de inmunodeficiencia adquirida (SIDA)
+3			Adam's apple	nuez de la garganta
 3			ADD 	síndrome de déficit atencional
 3			ADHD 	síndrome de hiperactividad y déficit atencional
 3			adrenal glands	glándulas suprarrenales
@@ -65,3 +66,4 @@ Count CDC and NIH Terms that match Both English and Spanish: 	0
 3			attention deficit hyperactivity disorder 	síndrome de hiperactividad y déficit atencional
 3			axillar vein	vena axilar
 3			axillary artery	arteria axilar
+4	Adam's apple	nuez de Adam	Adam's apple	nuez de Adam

@@ -31,7 +31,7 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv'
 def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, input1_count, input2_count, match_count):
     html_start = f"""<html lang='en'>
             <meta charset='UTF-8'>
-            <title>Multilingual Glossary Tool Diff of Glossaries</title>
+            <title>Multilingual Glossary Tool Diff of Glossaries - {input1_source} and {input2_source}</title>
             <meta name='viewport' content='width=device-width,initial-scale=1'>
             <head><link rel="stylesheet"  type="text/css" href="..\DiffMGT.css"></head>
             <body>

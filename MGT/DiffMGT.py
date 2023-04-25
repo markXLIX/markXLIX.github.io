@@ -31,11 +31,11 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv'
 def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, input1_count, input2_count, match_count):
     html_start = f"""<html lang='en'>
             <meta charset='UTF-8'>
-            <title>Page Title</title>
+            <title>Multilingual Glossary Tool Diff of Glossaries</title>
             <meta name='viewport' content='width=device-width,initial-scale=1'>
             <head><link rel="stylesheet"  type="text/css" href="..\DiffMGT.css"></head>
             <body>
-                <h1>TEST</h1>
+                <h1>Multilingual Glossary Tool Diff of Glossaries</h1>
                 """
     html_counter = single_sheet_html_count(
         input1_count, input2_count, match_count)
@@ -48,7 +48,7 @@ def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_i
 
 
 def single_sheet_html_count(input1_count, input2_count, match_count):
-    html = f"""<div>
+    html = f"""<div id='outline'>
         <p>
                 <ul>
                     <li><a href='#input1_no_match'>{input1_source} - No Match to {input2_source}</a> - {input1_count} hits</li>
@@ -63,7 +63,9 @@ def single_sheet_html_count(input1_count, input2_count, match_count):
 
 
 def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match):
-    table_1 = f"""<div id='input1_no_match'><table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    # Input 1 vs Input 2
+    table_1 = f"""<div id='input1_no_match'><h2>{input1_source} - No Match to {input2_source}</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
     counter = 0
     highlight = ''
     for row in no_match_list_input1_item:
@@ -74,10 +76,45 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
         table_1 = table_1 + term_row
         counter += 1
         highlight = ''
-    table_1 += "</table></div>"
+    table_1 += "</table><p><a href='#outline'>Return to TOC</a></p><br/<br/></div>"
     # reset counter for next table
     counter = 0
-    return table_1
+
+    # input 2 vs Input 1
+    table_2 = f"""<div id='input2_no_match'><h2>{input2_source} - No Match to {input1_source}</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in no_match_list_input2_item:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_2 = table_2 + term_row
+        counter += 1
+        highlight = ''
+    table_2 += "</table><p><a href='#outline'>Return to TOC</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    # Matches
+    table_3 = f"""<div id='match'><h2>{input1_source} and {input2_source} Match</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in terms_match:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_3 = table_3 + term_row
+        counter += 1
+        highlight = ''
+    table_3 += "</table><p><a href='#outline'>Return to TOC</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    return table_1 + table_2 + table_3
 
 
 input2_list = []

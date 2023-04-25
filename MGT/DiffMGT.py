@@ -175,59 +175,10 @@ print("Match count:", count_terms_match)
 headers = ['CDC English', 'CDC Spanish', 'NIH English', 'NIH Spanish']
 
 # names of files to write
-CDC_English_Not_NIH_Spanish = output_dir + input1_source + '_' + input2_source + \
-    '__' + input2_source + 'EnglishNot' + input1_source + 'Spanish.tsv'
-CNIH_English_Not_CDC_Spanish = output_dir + input1_source + '_' + input2_source + \
-    '__' + input1_source + 'EnglishNot' + input2_source + 'Spanish.tsv'
-Terms_Match = output_dir + input1_source + \
-    '_' + input2_source + '__' + 'TermsMatch.tsv'
-MGT_Diff_Single_Sheet = output_dir + input1_source + '_' + \
-    input2_source + '__' + 'MGTDiffSingleSheet.tsv'
 MGT_Diff_Single_Sheet_HTML = output_dir + input1_source + '_' + \
     input2_source + '__' + 'MGTDiffSingleSheet.html'
 
 # write the files
-with open(MGT_Diff_Single_Sheet, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(
-        ["Count of CDC English has no NIH English Match: ", count_no_match_list_input1])
-    tsv_writer.writerow(
-        ["Count of NIH English has no CDC English Match: ", count_no_match_list_input2])
-    tsv_writer.writerow(
-        ["Count CDC and NIH Terms that match Both English and Spanish: ", count_terms_match])
-    for j in no_match_list_input1_item:
-        b = ['2'] + j
-        tsv_writer.writerow(b)
-    for k in no_match_list_input2_item:
-        c = ['3'] + k
-        tsv_writer.writerow(c)
-    for l in terms_match:
-        d = ['4'] + l
-        tsv_writer.writerow(d)
-
-with open(CDC_English_Not_NIH_Spanish, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_no_match_list_input1])
-    for i in no_match_list_input2_item:
-        tsv_writer.writerow(i)
-
-with open(CNIH_English_Not_CDC_Spanish, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_no_match_list_input2])
-    for i in no_match_list_input2_item:
-        tsv_writer.writerow(i)
-
-with open(Terms_Match, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_terms_match])
-    for i in terms_match:
-        tsv_writer.writerow(i)
-
-
 with open(MGT_Diff_Single_Sheet_HTML, 'wt', encoding='utf-8', newline='') as file_out:
     html = single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match,
                              count_no_match_list_input1, count_no_match_list_input2, count_terms_match)

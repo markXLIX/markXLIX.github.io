@@ -10,7 +10,7 @@ output_dir = 'MGT/Outputs/'
 
 # open .tsv file(s)
 #nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
-input1_initial = open('\GitHub\markXLIX.github.io\MGT\CDC_testing.tsv',
+input1_initial = open('\GitHub\markXLIX.github.io\MGT\CDC_#_a.tsv',
                       encoding='utf-8').read().split('\n')
 input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv',
                       encoding='utf-8').read().split('\n')
@@ -24,6 +24,9 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv'
 #cdc_list = pd.read_csv('CDC_testing.tsv', sep='\t', header=None)
 #nih_list = pd.read_csv('NIH_testing.tsv', sep='\t', header=None)
 # END COMMENTS
+
+# Enhancements:
+# trim leading and trailing spaces from the input items (causing errors in comparison)
 
 
 #            <style>.row_highlight {background-color: gray;}</style>
@@ -51,7 +54,7 @@ def single_sheet_html_count(input1_count, input2_count, match_count):
     html = f"""<div id='outline'>
         <p>
                 <ul>
-                    <li><a href='#input1_no_match'>{input1_source} - No Match to {input2_source}</a> - {input1_count} hits</li>
+                    <li><a href='#input1_no_match'>{input1_source} English - No Match to {input2_source} English</a> - {input1_count} hits</li>
                     <li><a href='#input2_no_match'>{input2_source} - No Match to {input1_source}</a> - {input2_count} hits</li>
                     <li><a href='#match'>Inputs Match</a> - {match_count} hits</li>
                 </ul>
@@ -64,7 +67,7 @@ def single_sheet_html_count(input1_count, input2_count, match_count):
 
 def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match):
     # Input 1 vs Input 2
-    table_1 = f"""<div id='input1_no_match'><h2>{input1_source} - No Match to {input2_source}</h2>
+    table_1 = f"""<div id='input1_no_match'><h2>no_match_list_input1_item - {input1_source} Has English Term That Does Not Exist In {input2_source}</h2>
         <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
     counter = 0
     highlight = ''
@@ -81,7 +84,7 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
     counter = 0
 
     # input 2 vs Input 1
-    table_2 = f"""<div id='input2_no_match'><h2>{input2_source} - No Match to {input1_source}</h2>
+    table_2 = f"""<div id='input2_no_match'><h2>no_match_list_input2_item - {input2_source} - No Match to {input1_source}</h2>
         <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
     counter = 0
     highlight = ''
@@ -98,7 +101,7 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
     counter = 0
 
     # Matches
-    table_3 = f"""<div id='match'><h2>{input1_source} and {input2_source} Match</h2>
+    table_3 = f"""<div id='match'><h2>terms_match - {input1_source} and {input2_source} Match</h2>
         <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
     counter = 0
     highlight = ''
@@ -114,7 +117,23 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
     # reset counter for next table
     counter = 0
 
-    return table_1 + table_2 + table_3
+    table_4 = f"""<div id='match'><h2>spanish_mismatch - {input1_source} and {input2_source} English Match - Spanish does not</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in spanish_mismatch:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_4 = table_4 + term_row
+        counter += 1
+        highlight = ''
+    table_4 += "</table><p><a href='#outline'>Return to TOC</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    return table_1 + table_2 + table_3 + table_4
 
 
 input2_list = []
@@ -127,6 +146,7 @@ for i in input2_initial:
 
 # create empty variables to store results
 terms_match = []
+spanish_mismatch = []
 no_match_list_input1_item = []
 no_match_list_input2_item = []
 last_english_term_input1_item = ''
@@ -141,31 +161,37 @@ for input1_item in input1_list:
     else:
         input1_item[0] = last_english_term_input1_item
     match_found = False
+    # get length of inner list
+    input2_list_len = len(input2_list)
     # loop through each row in list2
     for input2_item in input2_list:
+        # create an index counter
+        current_idx = input2_list.index(input2_item)
         # assign value to last_english_term_input2_item if current input2_item value is non-empty.
         # otherwise do not change value of last_english_term_input2_item
         if input2_item[0] != '':
             last_english_term_input2_item = input2_item[0]
         else:
             input2_item[0] = last_english_term_input2_item
-        match_found = False
-        # check if the first item in the row matches (this means there is a matching English term in each list)
-        if input1_item[0] == input2_item[0]:
-            # check if the second item in the row matches (This means there is a matching Spanish term in each list)
-            if input1_item[1] == input2_item[1]:
-                # if there is a match, add the row to the terms_match variable
-                terms_match.append([input1_item[0], input1_item[1],
-                                    input2_item[0], input2_item[1]])
-                # break out of the loop through list2
-                match_found = True
-                break
-    # if no match was found, add the row to the no_match_list variable
+        if input1_item == input2_item:
+            # This means there is a matching English/Spanish term pair in each list
+            terms_match.append(
+                [input1_item[0], input1_item[1], input2_item[0], input2_item[1]])
+            # break out of the loop through list2
+            match_found = True
+            input2_list.remove(input2_item)
+            break
+        elif input1_item[0] == input2_item[0]:
+            spanish_mismatch.append([input1_item[0], input1_item[1],
+                                     input2_item[0], input2_item[1]])
+            match_found = True
+            input2_list.remove(input2_item)
+            break
     if not match_found:
-        a = [input1_item[0], input1_item[1], None, None]
-        no_match_list_input1_item.append(a)
+        no_match_list_input1_item.append(
+            [input1_item[0], input1_item[1], None, None])
 
-# Check for NIH terms that do not exist in CDC list
+# Check for SSA terms that do not exist in CDC list
 for input2_item in input2_list:
     match_found = False
     for input1_item in input1_list:
@@ -209,7 +235,7 @@ for row in terms_match:
 print("Match count:", count_terms_match)
 
 # headers
-headers = ['CDC English', 'CDC Spanish', 'NIH English', 'NIH Spanish']
+headers = ['CDC English', 'CDC Spanish', 'SSA English', 'SSA Spanish']
 
 # names of files to write
 MGT_Diff_Single_Sheet_HTML = output_dir + input1_source + '_' + \

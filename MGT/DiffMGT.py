@@ -1,178 +1,256 @@
 import csv
+
+# ADJUST for source documents
+# Define source of input files
+input1_source = "CDC"
+input2_source = "SSA"
+
+# Define output file directory (relative to main script)
+output_dir = 'MGT/Outputs/'
+
 # open .tsv file(s)
-
-# DEBUG
-# probably need to rename all the agency specific elements to something generic
-
 #nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
-nih_initial = open('A_latinoschools_spanish_vocabulatory_Medicine_and_health.tsv',
-                   encoding='utf-8').read().split('\n')
-cdc_initial = open('CDC_testing.tsv', encoding='utf-8').read().split('\n')
+input1_initial = open('\GitHub\markXLIX.github.io\MGT\CDC_#_a.tsv',
+                      encoding='utf-8').read().split('\n')
+input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv',
+                      encoding='utf-8').read().split('\n')
+# END ADJUST for source documents
+
+# COMMENTS
 # Pandas caused type errors due to identifying some content as integer rather than string.
 # Obviously can fix this but decided to just get it working as a normal list
 # Probably just required encoding on read.  will have to test if time permits.
 # Might be able to use the Google API to do this all within Google Sheets (without manual TSV export/import)
 #cdc_list = pd.read_csv('CDC_testing.tsv', sep='\t', header=None)
 #nih_list = pd.read_csv('NIH_testing.tsv', sep='\t', header=None)
+# END COMMENTS
 
-nih_list = []
-cdc_list = []
+# Enhancements:
+# trim leading and trailing spaces from the input items (causing errors in comparison)
 
-for i in cdc_initial:
-    cdc_list.append(i.split('\t'))
-for i in nih_initial:
-    nih_list.append(i.split('\t'))
+
+#            <style>.row_highlight {background-color: gray;}</style>
+
+def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, input1_count, input2_count, match_count, spanish_mismatch_count):
+    html_start = f"""<html lang='en'>
+            <meta charset='UTF-8'>
+            <title>Multilingual Glossary Tool Diff of Glossaries - {input1_source} and {input2_source}</title>
+            <meta name='viewport' content='width=device-width,initial-scale=1'>
+            <head><link rel="stylesheet"  type="text/css" href="..\DiffMGT.css"></head>
+            <body>
+                <h1 class='TOP'>Multilingual Glossary Tool Diff of Glossaries</h1>
+                """
+    html_counter = single_sheet_html_count(
+        input1_count, input2_count, match_count, spanish_mismatch_count)
+    html_body = single_sheet_html_body(
+        headers, no_match_list_input1_item, no_match_list_input2_item, terms_match)
+    html_end = f"""
+            </body>
+        </html>"""
+    return html_start + html_counter + html_body + html_end
+
+
+def single_sheet_html_count(input1_count, input2_count, match_count, spanish_mismatch_count):
+    html = f"""<div id='outline'>
+        <p>
+                <ul>
+                    <li><a href='#input1_no_match'>{input1_source} English - No Match to {input2_source} English</a> - {input1_count} hits</li>
+                    <li><a href='#input2_no_match'>{input2_source} English - No Match to {input1_source} English</a> - {input2_count} hits</li>
+                    <li><a href='#match'>Inputs Match</a> - {match_count} hits</li>
+                    <li><a href='#spanish_mismatch'>English Match, Spanish Does Not</a> - {spanish_mismatch_count} hits</li>
+
+                </ul>
+            </p>
+    </div>"""
+    return html
+
+#DEBUG - This is not working
+
+
+def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match):
+    # Input 1 vs Input 2
+    table_1 = f"""<div id='input1_no_match'><h2>{input1_source} English - No Match to {input2_source} English</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in no_match_list_input1_item:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_1 = table_1 + term_row
+        counter += 1
+        highlight = ''
+    table_1 += "</table><p><a href='#TOP'>Return to TOP</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    # input 2 vs Input 1
+    table_2 = f"""<div id='input2_no_match'><h2>{input2_source} English - No Match to {input1_source} English</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in no_match_list_input2_item:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_2 = table_2 + term_row
+        counter += 1
+        highlight = ''
+    table_2 += "</table><p><a href='#TOP'>Return to TOP</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    # Matches
+    table_3 = f"""<div id='match'><h2>Inputs Match</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in terms_match:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_3 = table_3 + term_row
+        counter += 1
+        highlight = ''
+    table_3 += "</table><p><a href='#TOP'>Return to TOP</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    table_4 = f"""<div id='spanish_mismatch'><h2>English Match, Spanish Does Not</h2>
+        <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
+    counter = 0
+    highlight = ''
+    for row in spanish_mismatch:
+        # only highlight the odd rows
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td>{row[3]}</td></tr>"""
+        table_4 = table_4 + term_row
+        counter += 1
+        highlight = ''
+    table_4 += "</table><p><a href='#TOP'>Return to TOP</a></p><br/<br/></div>"
+    # reset counter for next table
+    counter = 0
+
+    return table_3 + table_4 + table_1 + table_2
+
+
+input2_list = []
+input1_list = []
+
+for i in input1_initial:
+    input1_list.append(i.split('\t'))
+for i in input2_initial:
+    input2_list.append(i.split('\t'))
 
 # create empty variables to store results
 terms_match = []
-no_match_list_cdc = []
-no_match_list_nih = []
-english_term_exists = []
-last_english_term_cdc = ''
-last_english_term_nih = ''
-cdc_counter = 0
-nih_counter = 0
+spanish_mismatch = []
+no_match_list_input1_item = []
+no_match_list_input2_item = []
+last_english_term_input1_item = ''
+last_english_term_input2_item = ''
 
 # loop through each row in list1
-for cdc in cdc_list:
-    nih_counter = 0
+for input1_item in input1_list:
     # assign value to last_english_term_cdc if current cdc value is non-empty.
     # otherwise do not change value of last_english_term_cdc
-    if cdc[0] != '':
-        last_english_term_cdc = cdc[0]
+    if input1_item[0] != '':
+        last_english_term_input1_item = input1_item[0]
     else:
-        cdc[0] = last_english_term_cdc
+        input1_item[0] = last_english_term_input1_item
     match_found = False
+    # get length of inner list
+    input2_list_len = len(input2_list)
     # loop through each row in list2
-    for nih in nih_list:
-        # assign value to last_english_term_nih if current nih value is non-empty.
-        # otherwise do not change value of last_english_term_nih
-        if nih[0] != '':
-            last_english_term_nih = nih[0]
+    for input2_item in input2_list:
+        # create an index counter
+        current_idx = input2_list.index(input2_item)
+        # assign value to last_english_term_input2_item if current input2_item value is non-empty.
+        # otherwise do not change value of last_english_term_input2_item
+        if input2_item[0] != '':
+            last_english_term_input2_item = input2_item[0]
         else:
-            nih[0] = last_english_term_nih
-        match_found = False
-        # check if the first item in the row matches
-        if cdc[0] == nih[0]:
-            # check if the second item in the row matches
-            if cdc[1] == nih[1]:
-                # if there is a match, add the row to the match_list variable
-                a = [cdc[0], cdc[1], nih[0], nih[1]]
-                terms_match.append(a)
-                # break out of the loop through list2
-                match_found = True
-                del nih_list[nih_counter]
-                break
-            else:
-                a = [cdc[0], cdc[1], nih[0], nih[1]]
-                english_term_exists.append(a)
-                match_found = True
-                del nih_list[nih_counter]
-                break
-        nih_counter += 1
-    # if no match was found, add the row to the no_match_list variable
-    if not match_found:
-        a = [cdc[0], cdc[1], nih[0], nih[1]]
-        no_match_list_cdc.append(a)
-    cdc_counter += 1
-
-# Check for NIH terms that do not exist in CDC list
-for nih in nih_list:
-    match_found = False
-    for cdc in cdc_list:
-        if nih[0] == cdc[0]:
+            input2_item[0] = last_english_term_input2_item
+        if input1_item == input2_item:
+            # This means there is a matching English/Spanish term pair in each list
+            terms_match.append(
+                [input1_item[0], input1_item[1], input2_item[0], input2_item[1]])
+            # break out of the loop through list2
             match_found = True
+            input2_list.remove(input2_item)
+            break
+        elif input1_item[0] == input2_item[0]:
+            spanish_mismatch.append([input1_item[0], input1_item[1],
+                                     input2_item[0], input2_item[1]])
+            match_found = True
+            input2_list.remove(input2_item)
             break
     if not match_found:
-        a = [cdc[0], cdc[1], nih[0], nih[1]]
-        no_match_list_nih.append(a)
+        no_match_list_input1_item.append(
+            [input1_item[0], input1_item[1], None, None])
+
+# Remaining items in second list do not have a match in the first list.  Simply output
+for input2_item in input2_list:
+    no_match_list_input2_item.append(
+        [None, None, input2_item[0], input2_item[1]])
+
+# Check for SSA terms that do not exist in CDC list
+""" for input2_item in input2_list:
+    match_found = False
+    for input1_item in input1_list:
+        if input1_item[0] != '':
+            last_english_term_input1_item = input1_item[0]
+        else:
+            input1_item[0] = last_english_term_input1_item
+        match_found = False
+        # check if the first item in the row matches (this means there is a matching English term in each list)
+        if input2_item[0] == input1_item[0]:
+            # check if the second item in the row matches (This means there is a matching Spanish term in each list)
+            if input2_item[1] == input1_item[1]:
+                # Do not output this value as it has already been found in the first loop (compare input1 to input2)
+                match_found = True
+                break
+    if not match_found:
+        a = [None, None, input2_item[0], input2_item[1]]
+        no_match_list_input2_item.append(a) """
 
 # count of each output variable
-count_english_term_exists = len(english_term_exists)
-count_no_match_list_cdc = len(no_match_list_cdc)
-count_no_match_list_nih = len(no_match_list_nih)
+count_no_match_list_input1 = len(no_match_list_input1_item)
+count_no_match_list_input2 = len(no_match_list_input2_item)
 count_terms_match = len(terms_match)
+count_spanish_mismatch = len(spanish_mismatch)
 
-# print the results to screen
-print("\nCDC English Terms Exists, Spanish Does Not Match:")
-for row in english_term_exists:
+# print the results to screen DEBUG
+""" print("\n", input1_source,
+      "English/Spanish pair does not exist in", input2_source, ": ")
+for row in no_match_list_input1_item:
     print(row)
-print("Match count:", len(english_term_exists))
+print("No match count:", count_no_match_list_input1)
 
-print("\nCDC English Term does not exist in NIH:")
-for row in no_match_list_cdc:
+print("\n", input2_source,
+      "English/Spanish pair does not exist in", input1_source, ": ")
+for row in no_match_list_input2_item:
     print(row)
-print("No match count:", count_no_match_list_cdc)
-
-print("\nNIH English Term does not exist in CDC:")
-for row in no_match_list_nih:
-    print(row)
-print("No match count:", count_no_match_list_nih)
+print("No match count:", count_no_match_list_input2)
 
 print("\nEnglish and Spanish Terms Match:")
 for row in terms_match:
     print(row)
-print("Match count:", count_terms_match)
+print("Match count:", count_terms_match) """
 
 # headers
-headers = ['CDC English', 'CDC Spanish', 'NIH English', 'NIH Spanish']
+headers = ['CDC English', 'CDC Spanish', 'SSA English', 'SSA Spanish']
 
-# names of files to write to
-English_Not_Spanish = 'EnglishNotSpanish.tsv'
-CDC_English_Not_NIH_Spanish = 'CDCEnglishNotNIHSpanish.tsv'
-CNIH_English_Not_CDC_Spanish = 'CNIHEnglishNotCDCSpanish.tsv'
-Terms_Match = 'TermsMatch.tsv'
-MGT_Diff_Single_Sheet = 'MGTDiffSingleSheet.tsv'
+# names of files to write
+MGT_Diff_Single_Sheet_HTML = output_dir + input1_source + '_' + \
+    input2_source + '__' + 'MGTDiffSingleSheet.html'
 
-# write the TSV files
-with open(MGT_Diff_Single_Sheet, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(
-        ["Count of CDC English matches NIH English but not Spanish: ", count_english_term_exists])
-    tsv_writer.writerow(
-        ["Count of CDC English has no NIH English Match: ", count_no_match_list_cdc])
-    tsv_writer.writerow(
-        ["Count of NIH English has no CDC English Match: ", count_no_match_list_nih])
-    tsv_writer.writerow(
-        ["Count CDC and NIH Terms that match Both English and Spanish: ", count_terms_match])
-    for i in english_term_exists:
-        a = ['1'] + i
-        tsv_writer.writerow(a)
-    for j in no_match_list_cdc:
-        b = ['2'] + j
-        tsv_writer.writerow(b)
-    for k in no_match_list_nih:
-        c = ['3'] + k
-        tsv_writer.writerow(c)
-    for l in terms_match:
-        d = ['4'] + l
-        tsv_writer.writerow(d)
-
-with open(English_Not_Spanish, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_english_term_exists])
-    for i in english_term_exists:
-        tsv_writer.writerow(i)
-
-with open(CDC_English_Not_NIH_Spanish, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_no_match_list_cdc])
-    for i in no_match_list_cdc:
-        tsv_writer.writerow(i)
-
-with open(CNIH_English_Not_CDC_Spanish, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_no_match_list_nih])
-    for i in no_match_list_nih:
-        tsv_writer.writerow(i)
-
-with open(Terms_Match, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv_writer = csv.writer(file_out, delimiter='\t')
-    tsv_writer.writerow([h for h in headers])
-    tsv_writer.writerow(["Count: ", count_terms_match])
-    for i in terms_match:
-        tsv_writer.writerow(i)
+# write the files
+with open(MGT_Diff_Single_Sheet_HTML, 'wt', encoding='utf-8', newline='') as file_out:
+    html = single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match,
+                             count_no_match_list_input1, count_no_match_list_input2, count_terms_match, count_spanish_mismatch)
+    file_out.write(html)

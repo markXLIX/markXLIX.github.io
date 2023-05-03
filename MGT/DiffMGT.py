@@ -10,9 +10,9 @@ output_dir = 'MGT/Outputs/'
 
 # open .tsv file(s)
 #nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
-input1_initial = open('\GitHub\markXLIX.github.io\MGT\CDC_#_a.tsv',
+input1_initial = open('\GitHub\markXLIX.github.io\MGT\sources\CDC_#_a.tsv',
                       encoding='utf-8').read().split('\n')
-input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv',
+input2_initial = open('\GitHub\markXLIX.github.io\MGT\sources\A_SSA English-Spanish.tsv',
                       encoding='utf-8').read().split('\n')
 # END ADJUST for source documents
 
@@ -26,7 +26,8 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\A_SSA English-Spanish.tsv'
 # END COMMENTS
 
 # Enhancements:
-# trim leading and trailing spaces from the input items (causing errors in comparison)
+# 1. Data cleanup is still an issue - see SSA source and almost any pair that contains a ().
+#    The string outside the () may match but the addition of the () string causes errors.
 
 
 #            <style>.row_highlight {background-color: gray;}</style>
@@ -63,8 +64,6 @@ def single_sheet_html_count(input1_count, input2_count, match_count, spanish_mis
             </p>
     </div>"""
     return html
-
-#DEBUG - This is not working
 
 
 def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match):
@@ -138,13 +137,17 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
     return table_3 + table_4 + table_1 + table_2
 
 
+input1 = []
+input2 = []
 input2_list = []
 input1_list = []
 
 for i in input1_initial:
-    input1_list.append(i.split('\t'))
+    input1.append(i.split('\t'))
+input1_list = [[i.strip() if i else '' for i in sublist] for sublist in input1]
 for i in input2_initial:
-    input2_list.append(i.split('\t'))
+    input2.append(i.split('\t'))
+input2_list = [[i.strip() if i else '' for i in sublist] for sublist in input2]
 
 # create empty variables to store results
 terms_match = []
@@ -240,8 +243,8 @@ print("No match count:", count_no_match_list_input2)
 print("\nEnglish and Spanish Terms Match:")
 for row in terms_match:
     print(row)
-print("Match count:", count_terms_match) """
-
+print("Match count:", count_terms_match)
+ """
 # headers
 headers = ['CDC English', 'CDC Spanish', 'SSA English', 'SSA Spanish']
 

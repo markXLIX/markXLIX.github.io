@@ -9,7 +9,7 @@ input2_source = "SSA"
 output_dir = 'MGT/Outputs/'
 
 # open .tsv file(s)
-#nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
+# nih_initial = open('NIH_testing.tsv', encoding='utf-8').read().split('\n')
 input1_initial = open('\GitHub\markXLIX.github.io\MGT\sources\CDC_#_a.tsv',
                       encoding='utf-8').read().split('\n')
 input2_initial = open('\GitHub\markXLIX.github.io\MGT\sources\A_SSA English-Spanish.tsv',
@@ -21,18 +21,21 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\sources\A_SSA English-Span
 # Obviously can fix this but decided to just get it working as a normal list
 # Probably just required encoding on read.  will have to test if time permits.
 # Might be able to use the Google API to do this all within Google Sheets (without manual TSV export/import)
-#cdc_list = pd.read_csv('CDC_testing.tsv', sep='\t', header=None)
-#nih_list = pd.read_csv('NIH_testing.tsv', sep='\t', header=None)
+# cdc_list = pd.read_csv('CDC_testing.tsv', sep='\t', header=None)
+# nih_list = pd.read_csv('NIH_testing.tsv', sep='\t', header=None)
 # END COMMENTS
 
 # Enhancements:
 # 1. Data cleanup is still an issue - see SSA source and almost any pair that contains a ().
 #    The string outside the () may match but the addition of the () string causes errors.
+# 2. English Spanish Headers are printing with input1 does not match input2.  Need to remove those.
+# Maybe I need to be creating a list instead of the strings in the MGT_fix function.  Then append the list together,
+# sort the list, and output the strings.  Something to think about.
 
 
 #            <style>.row_highlight {background-color: gray;}</style>
 
-def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, input1_count, input2_count, match_count, spanish_mismatch_count):
+def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, spanish_mismatch, input1_count, input2_count, match_count, spanish_mismatch_count):
     html_start = f"""<html lang='en'>
             <meta charset='UTF-8'>
             <title>Multilingual Glossary Tool Diff of Glossaries - {input1_source} and {input2_source}</title>
@@ -44,7 +47,7 @@ def single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_i
     html_counter = single_sheet_html_count(
         input1_count, input2_count, match_count, spanish_mismatch_count)
     html_body = single_sheet_html_body(
-        headers, no_match_list_input1_item, no_match_list_input2_item, terms_match)
+        headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, spanish_mismatch)
     html_end = f"""
             </body>
         </html>"""
@@ -55,10 +58,10 @@ def single_sheet_html_count(input1_count, input2_count, match_count, spanish_mis
     html = f"""<div id='outline'>
         <p>
                 <ul>
-                    <li><a href='#input1_no_match'>{input1_source} English - No Match to {input2_source} English</a> - {input1_count} hits</li>
-                    <li><a href='#input2_no_match'>{input2_source} English - No Match to {input1_source} English</a> - {input2_count} hits</li>
                     <li><a href='#match'>Inputs Match</a> - {match_count} hits</li>
                     <li><a href='#spanish_mismatch'>English Match, Spanish Does Not</a> - {spanish_mismatch_count} hits</li>
+                    <li><a href='#input1_no_match'>{input1_source} English - No Match to {input2_source} English</a> - {input1_count} hits</li>
+                    <li><a href='#input2_no_match'>{input2_source} English - No Match to {input1_source} English</a> - {input2_count} hits</li>
 
                 </ul>
             </p>
@@ -66,7 +69,7 @@ def single_sheet_html_count(input1_count, input2_count, match_count, spanish_mis
     return html
 
 
-def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match):
+def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, spanish_mismatch):
     # Input 1 vs Input 2
     table_1 = f"""<div id='input1_no_match'><h2>{input1_source} English - No Match to {input2_source} English</h2>
         <table><tr><th>{headers[0]}</th><th>{headers[1]}</th><th>{headers[2]}</th><th>{headers[3]}</th></tr>"""
@@ -135,6 +138,36 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
     counter = 0
 
     return table_3 + table_4 + table_1 + table_2
+
+
+def MGT_fix(input):
+
+    header = 'English\tSpanish'
+    tsv = ''
+    print(len(input[0]))
+    print(input[0][0])
+    if input[0][0] == None:
+        for i in input:
+            row = f"""{i[2]}\t{i[3]}\n"""
+            tsv = tsv + row
+    elif input[0][2] == None:
+        for i in input:
+            row = f"""{i[0]}\t{i[1]}\n"""
+            tsv = tsv + row
+    elif input[0][0] == input[0][2]:
+        for i in input:
+            row = f"""{i[0]}\t{i[1]}\n"""
+            tsv = tsv + row
+    else:
+        for i in input:
+            row = f"""{i[0]}\t{i[1]}\n{i[2]}\t{i[3]}\n"""
+            tsv = tsv + row
+
+    return header + '\n' + tsv
+
+
+def MGT_combine_TSV(input1, input2, input3, input4):
+    return input1 + '\n' + input2 + '\n' + input3 + '\n' + input4
 
 
 input1 = []
@@ -252,8 +285,19 @@ headers = ['CDC English', 'CDC Spanish', 'SSA English', 'SSA Spanish']
 MGT_Diff_Single_Sheet_HTML = output_dir + input1_source + '_' + \
     input2_source + '__' + 'MGTDiffSingleSheet.html'
 
+MGT_Combined = output_dir + input1_source + '_' + \
+    input2_source + '__' + 'MGT_Combined.tsv'
+
 # write the files
 with open(MGT_Diff_Single_Sheet_HTML, 'wt', encoding='utf-8', newline='') as file_out:
-    html = single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match,
+    html = single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, spanish_mismatch,
                              count_no_match_list_input1, count_no_match_list_input2, count_terms_match, count_spanish_mismatch)
     file_out.write(html)
+
+with open(MGT_Combined, 'wt', encoding='utf-8', newline='') as file_out:
+    tsv1_file = MGT_fix(no_match_list_input1_item, )
+    tsv2_file = MGT_fix(no_match_list_input2_item)
+    tsv3_file = MGT_fix(terms_match)
+    tsv4_file = MGT_fix(spanish_mismatch)
+    tsv_file = MGT_combine_TSV(tsv1_file, tsv2_file, tsv3_file, tsv4_file)
+    file_out.write(tsv_file)

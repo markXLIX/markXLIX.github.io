@@ -28,9 +28,8 @@ input2_initial = open('\GitHub\markXLIX.github.io\MGT\sources\A_SSA English-Span
 # Enhancements:
 # 1. Data cleanup is still an issue - see SSA source and almost any pair that contains a ().
 #    The string outside the () may match but the addition of the () string causes errors.
-# 2. English Spanish Headers are printing with input1 does not match input2.  Need to remove those.
-# Maybe I need to be creating a list instead of the strings in the MGT_fix function.  Then append the list together,
-# sort the list, and output the strings.  Something to think about.
+# 2. Sorting is still an issue.  Need to sort the final output of the combined tsv_file.
+#    Probably needs to output as a single list not a bunch of strings.
 
 
 #            <style>.row_highlight {background-color: gray;}</style>
@@ -141,33 +140,35 @@ def single_sheet_html_body(headers, no_match_list_input1_item, no_match_list_inp
 
 
 def MGT_fix(input):
-
-    header = 'English\tSpanish'
-    tsv = ''
-    print(len(input[0]))
-    print(input[0][0])
+    tsv = []
     if input[0][0] == None:
         for i in input:
-            row = f"""{i[2]}\t{i[3]}\n"""
-            tsv = tsv + row
+            tsv.append([i[2], i[3]])
     elif input[0][2] == None:
         for i in input:
-            row = f"""{i[0]}\t{i[1]}\n"""
-            tsv = tsv + row
-    elif input[0][0] == input[0][2]:
+            tsv.append([i[0], i[1]])
+    # This is likely the problem with the next elif.
+    elif input[0][0] == input[0][2] and input[0][1] == input[0][3]:
         for i in input:
-            row = f"""{i[0]}\t{i[1]}\n"""
-            tsv = tsv + row
+            tsv.append([i[0], i[1]])
     else:
         for i in input:
-            row = f"""{i[0]}\t{i[1]}\n{i[2]}\t{i[3]}\n"""
-            tsv = tsv + row
-
-    return header + '\n' + tsv
+            tsv.append([i[0], i[1]])
+            tsv.append([i[2], i[3]])
+            print(i[0], i[1])
+            print(i[2], i[3])
+    return tsv
 
 
 def MGT_combine_TSV(input1, input2, input3, input4):
-    return input1 + '\n' + input2 + '\n' + input3 + '\n' + input4
+    tsv1 = []
+    tsv1.append(input1)
+    tsv1.append(input2)
+    tsv1.append(input3)
+    tsv1.append(input4)
+    tsv1.sort()
+    tsv1 = [i for sublist in tsv1 for i in sublist]
+    return tsv1
 
 
 input1 = []
@@ -234,50 +235,12 @@ for input2_item in input2_list:
     no_match_list_input2_item.append(
         [None, None, input2_item[0], input2_item[1]])
 
-# Check for SSA terms that do not exist in CDC list
-""" for input2_item in input2_list:
-    match_found = False
-    for input1_item in input1_list:
-        if input1_item[0] != '':
-            last_english_term_input1_item = input1_item[0]
-        else:
-            input1_item[0] = last_english_term_input1_item
-        match_found = False
-        # check if the first item in the row matches (this means there is a matching English term in each list)
-        if input2_item[0] == input1_item[0]:
-            # check if the second item in the row matches (This means there is a matching Spanish term in each list)
-            if input2_item[1] == input1_item[1]:
-                # Do not output this value as it has already been found in the first loop (compare input1 to input2)
-                match_found = True
-                break
-    if not match_found:
-        a = [None, None, input2_item[0], input2_item[1]]
-        no_match_list_input2_item.append(a) """
-
 # count of each output variable
 count_no_match_list_input1 = len(no_match_list_input1_item)
 count_no_match_list_input2 = len(no_match_list_input2_item)
 count_terms_match = len(terms_match)
 count_spanish_mismatch = len(spanish_mismatch)
 
-# print the results to screen DEBUG
-""" print("\n", input1_source,
-      "English/Spanish pair does not exist in", input2_source, ": ")
-for row in no_match_list_input1_item:
-    print(row)
-print("No match count:", count_no_match_list_input1)
-
-print("\n", input2_source,
-      "English/Spanish pair does not exist in", input1_source, ": ")
-for row in no_match_list_input2_item:
-    print(row)
-print("No match count:", count_no_match_list_input2)
-
-print("\nEnglish and Spanish Terms Match:")
-for row in terms_match:
-    print(row)
-print("Match count:", count_terms_match)
- """
 # headers
 headers = ['CDC English', 'CDC Spanish', 'SSA English', 'SSA Spanish']
 
@@ -288,6 +251,9 @@ MGT_Diff_Single_Sheet_HTML = output_dir + input1_source + '_' + \
 MGT_Combined = output_dir + input1_source + '_' + \
     input2_source + '__' + 'MGT_Combined.tsv'
 
+MGT_combinedHTML = output_dir + input1_source + '_' + \
+    input2_source + '__' + 'MGT_Combined.html'
+
 # write the files
 with open(MGT_Diff_Single_Sheet_HTML, 'wt', encoding='utf-8', newline='') as file_out:
     html = single_sheet_html(headers, no_match_list_input1_item, no_match_list_input2_item, terms_match, spanish_mismatch,
@@ -295,9 +261,47 @@ with open(MGT_Diff_Single_Sheet_HTML, 'wt', encoding='utf-8', newline='') as fil
     file_out.write(html)
 
 with open(MGT_Combined, 'wt', encoding='utf-8', newline='') as file_out:
-    tsv1_file = MGT_fix(no_match_list_input1_item, )
+    tsv1_file = MGT_fix(no_match_list_input1_item)
     tsv2_file = MGT_fix(no_match_list_input2_item)
     tsv3_file = MGT_fix(terms_match)
     tsv4_file = MGT_fix(spanish_mismatch)
     tsv_file = MGT_combine_TSV(tsv1_file, tsv2_file, tsv3_file, tsv4_file)
-    file_out.write(tsv_file)
+    for i in tsv_file:
+        file_out.write("\t".join(i) + "\n")
+
+with open(MGT_combinedHTML, 'wt', encoding='utf-8') as file_out:
+    tsv1_file = MGT_fix(no_match_list_input1_item)
+    tsv2_file = MGT_fix(no_match_list_input2_item)
+    tsv3_file = MGT_fix(terms_match)
+    tsv4_file = MGT_fix(spanish_mismatch)
+    tsv_file = MGT_combine_TSV(tsv1_file, tsv2_file, tsv3_file, tsv4_file)
+    html_start = f"""<html lang='en'>
+            <meta charset='UTF-8'>
+            <title>Multilingual Glossary Tool Diff of Glossaries - {input1_source} and {input2_source}</title>
+            <meta name='viewport' content='width=device-width,initial-scale=1'>
+            <head><link rel="stylesheet"  type="text/css" href="..\DiffMGT.css"></head>
+            <body>
+                <h1 class='TOP'>Multilingual Glossary Tool Diff of Glossaries</h1>
+                """
+    counter = 0
+    highlight = ''
+    table = ''
+    table_head = f"""<div><h2>{input1_source} and {input2_source} Combined</h2>
+        <table><tr><th>English</th><th>Spanish</th></tr>"""
+    count_of_all_items = len(tsv_file)
+    count = f"""<div id='outline'>
+                <p>
+                    <ul>
+                        <li>Items - {count_of_all_items}</li>
+                    </ul>
+                </p>
+            </div>"""
+    for i in tsv_file:
+        if (counter % 2 == 0):
+            highlight = "class='row_highlight'"
+        term_row = f"""<tr {highlight}><td>{i[0]}</td><td>{i[1]}</td></tr>"""
+        table = table + term_row
+        counter += 1
+        highlight = ''
+    table_end = "</table><p><a href='#TOP'>Return to TOP</a></p><br/<br/></div>"
+    file_out.write(html_start+count+table_head+table+table_end)
